@@ -1,0 +1,47 @@
+name: Release project
+on:
+  push:
+    tags-ignore:
+      - "**"
+  release:
+    types:
+      - created
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        versions: [ 17 ]
+    runs-on: ubuntu-latest
+    name: Release with Java ${{ matrix.versions }} projects
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK ${{ matrix.versions }}
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.versions }}
+      - name: maven-settings-action
+        uses: s4u/maven-settings-action@v2.5.0
+        with:
+          servers: |
+            [{
+                "id": "github-common",
+                "username": "${{ github.actor }}",
+                "password": "${{ secrets.GITHUB_TOKEN }}"
+            },
+            {
+                "id": "github-timeseries",
+                "username": "${{ github.actor }}",
+                "password": "${{ secrets.PACKAGE_REGISTRY }}"
+            }]
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Deploy projects
+        run: mvn --batch-mode deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.PACKAGE_REGISTRY }}

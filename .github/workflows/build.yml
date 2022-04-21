@@ -1,0 +1,25 @@
+name: Build and test project
+on: [ push, pull_request ]
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        versions: [ 17 ]
+    runs-on: ubuntu-latest
+    name: Build and test Java ${{ matrix.versions }} projects
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK ${{ matrix.versions }}
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.versions }}
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build all projects with Maven
+        run: mvn --batch-mode clean verify
