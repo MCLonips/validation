@@ -26,14 +26,9 @@ jobs:
         with:
           servers: |
             [{
-                "id": "github-common",
+                "id": "github-validation",
                 "username": "${{ github.actor }}",
                 "password": "${{ secrets.GITHUB_TOKEN }}"
-            },
-            {
-                "id": "github-timeseries",
-                "username": "${{ github.actor }}",
-                "password": "${{ secrets.PACKAGE_REGISTRY }}"
             }]
       - name: Cache Maven packages
         uses: actions/cache@v2
