@@ -22,21 +22,19 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ matrix.versions }}
       - name: maven-settings-action
-        uses: s4u/maven-settings-action@v2.5.0
+        uses: s4u/maven-settings-action@v2.6.0
         with:
           servers: |
             [{
                 "id": "github-validation",
                 "username": "${{ github.actor }}",
-                "password": "${{ GITHUB_TOKEN }}"
+                "password": "${{ secrets.PACKAGE_REGISTRY }}"
             }]
       - name: Cache Maven packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Deploy projects
         run: mvn --batch-mode deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.PACKAGE_REGISTRY }}
