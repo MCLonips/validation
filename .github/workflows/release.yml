@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Release with Java ${{ matrix.versions }} projects
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up JDK ${{ matrix.versions }}
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.versions }}
@@ -28,7 +28,7 @@ jobs:
             [{
                 "id": "github-validation",
                 "username": "${{ github.actor }}",
-                "password": "${{ secrets.GITHUB_TOKEN }}"
+                "password": "${{ GITHUB_TOKEN }}"
             }]
       - name: Cache Maven packages
         uses: actions/cache@v2
@@ -38,3 +38,5 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Deploy projects
         run: mvn --batch-mode deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.PACKAGE_REGISTRY }}
