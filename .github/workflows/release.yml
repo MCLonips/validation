@@ -28,13 +28,9 @@ jobs:
             [{
                 "id": "github-validation",
                 "username": "${{ github.actor }}",
-                "password": "${{ secrets.PACKAGE_REGISTRY }}"
+                "password": "${{ secrets.GITHUB_TOKEN  }}"
             }]
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
       - name: Deploy projects
         run: mvn --batch-mode deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.PACKAGE_REGISTRY }}
