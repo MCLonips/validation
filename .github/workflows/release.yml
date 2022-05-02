@@ -28,7 +28,7 @@ jobs:
             [{
                 "id": "github-validation",
                 "username": "${{ github.actor }}",
-                "password": "${{ secrets.PACKAGE_REGISTRY }}"
+                "password": "${{ secrets.GITHUB_TOKEN }}"
             }]
       - name: Cache Maven packages
         uses: actions/cache@v2
